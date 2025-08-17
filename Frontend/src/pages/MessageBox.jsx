@@ -1,17 +1,17 @@
 import { useState } from "react";
-import axios from "axios"; // ✅ future API ke liye
+import { useNavigate } from "react-router-dom";
+
 export default function ChatApp() {
+  const navigate = useNavigate(); // add this
   const [message, setMessage] = useState("");
   const [selectedChat, setSelectedChat] = useState(1);
 
-  // ✅ Local dummy chats
   const chats = [
     { id: 1, name: "Dada mota", lastMsg: "Hey, kya haal hai. Kl college aaogi kya?", time: "10:30 AM" },
     { id: 2, name: "Raja bauna suar", lastMsg: "Kal milte hai,mujhe tumhari aankho me kuch dikhta h!", time: "9:15 AM" },
     { id: 3, name: "TV", lastMsg: "Photo sath lele?", time: "Yesterday" },
   ];
 
-  // ✅ Local dummy messages
   const [chatMessages, setChatMessages] = useState({
     1: [
       { text: "Hey, kya haal hai. Kl college aaogi kya?", sender: "Dada mota", time: "10:30 AM" },
@@ -24,19 +24,6 @@ export default function ChatApp() {
     ],
   });
 
-  // ✅ Future API call for fetching chats
-  // useEffect(() => {
-  //   axios.get("/api/chats").then(res => setChats(res.data)).catch(err => console.log(err));
-  // }, []);
-
-  // ✅ Future API call for fetching messages
-  // useEffect(() => {
-  //   if (!selectedChat) return;
-  //   axios.get(`/api/chats/${selectedChat}/messages`)
-  //     .then(res => setChatMessages(prev => ({ ...prev, [selectedChat]: res.data })))
-  //     .catch(err => console.log(err));
-  // }, [selectedChat]);
-
   const handleSend = (e) => {
     e.preventDefault();
     if (!message.trim()) return;
@@ -46,10 +33,6 @@ export default function ChatApp() {
       sender: "You",
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
-
-        // ✅ Future API call for sending message
-    // axios.post(`/api/chats/${selectedChat}/messages`, newMsg).catch(err => console.log(err));
-
 
     setChatMessages({
       ...chatMessages,
@@ -83,8 +66,15 @@ export default function ChatApp() {
 
       {/* Right Side (Message Box) */}
       <div className="flex-1 flex flex-col">
-        <div className="bg-blue-600 text-white p-4 font-bold">
-          {chats.find((c) => c.id === selectedChat)?.name || "Select a Chat"}
+        <div className="flex items-center justify-between bg-blue-600 text-white p-4 font-bold">
+          <span>{chats.find((c) => c.id === selectedChat)?.name || "Select a Chat"}</span>
+          {/* ---------- BACK TO DASHBOARD BUTTON ---------- */}
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="bg-white text-blue-600 px-3 py-1 rounded hover:bg-gray-100 text-sm"
+          >
+            Back to Dashboard
+          </button>
         </div>
 
         <div className="flex-1 p-4 overflow-y-auto space-y-3">

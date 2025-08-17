@@ -3,52 +3,60 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MessageCircle, Heart, UserPlus, LogOut, Plus } from "lucide-react";
 import API from "../api/axios";
+import CreatePost from "./Createpost";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [connections, setConnections] = useState([]);
   const [suggested, setSuggested] = useState([]);
+  const [showCreatePost, setShowCreatePost] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.clear(); // token & userId clear
-    navigate("/login"); // redirect to login
+    localStorage.clear();
+    navigate("/login");
   };
 
-  // ✅ Send Connection Request
-  const sendConnectionRequest = async (receiverId) => {
+  // ✅ Send connection request
+  const sendConnectionRequest = async (targetUserId) => {
     try {
-      const res = await API.post("/users/connections/send", { receiverId });
-      console.log(receiverId)
-      // optional: remove from suggested after request sent
-      setSuggested((prev) => prev.filter((u) => u._id !== receiverId));
+      const token = localStorage.getItem("token");
+
+      await API.post(
+        "/users/connections/send",
+        { targetUserId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Remove user from suggestions
+      setSuggested((prev) => prev.filter((u) => u._id !== targetUserId));
+      alert("✅ Connection request sent!");
     } catch (err) {
       console.error("Connection request failed:", err);
-      alert("Failed to send request");
+      alert("❌ Failed to send request");
     }
   };
 
-  // ✅ Fetch logged in user + posts feed + suggested users
   useEffect(() => {
     const fetchData = async () => {
       try {
         const userId = localStorage.getItem("userId");
 
-        // get logged in user profile
+        // Current user info
         const userRes = await API.get(`/users/${userId}`);
         setUser(userRes.data);
 
-        // get feed
+        // Feed posts
         const feedRes = await API.get(`/posts/feed`);
         setPosts(feedRes.data);
 
-        // get all users except current
+        // Suggested users (all except me)
         const usersRes = await API.get(`/users`);
         const filtered = usersRes.data.filter((u) => u._id !== userId);
         setSuggested(filtered);
 
-        // (dummy for now - your actual connections will come from backend later)
+        // Dummy connections (replace later with backend)
         setConnections([
           { _id: "conn1", name: "Jane Smith", profilePic: "https://picsum.photos/35" },
           { _id: "conn2", name: "Peter Jones", profilePic: "https://picsum.photos/35" },
@@ -61,7 +69,6 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  // ✅ Like Post
   const toggleLike = async (postId) => {
     try {
       const res = await API.put(`/posts/${postId}/like`);
@@ -95,7 +102,7 @@ export default function Dashboard() {
           <span className="font-semibold text-gray-700">{user.name}</span>
         </div>
 
-        <div className="cursor-pointer" onClick={() => navigate("/messages")}>
+        <div className="cursor-pointer" onClick={() => navigate("/chat")}>
           <MessageCircle className="w-6 h-6 text-purple-600" />
         </div>
         <button
@@ -142,7 +149,11 @@ export default function Dashboard() {
             {suggested.length > 0 ? (
               suggested.map((sug) => (
                 <div key={sug._id} className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-3">
+                  {/* Left side: Navigate to user page */}
+                  <div
+                    className="flex items-center space-x-3 cursor-pointer"
+                    onClick={() => navigate(`/userpage/${sug._id}`)}
+                  >
                     <img
                       src={sug.profilePic || "https://picsum.photos/35"}
                       alt="suggested"
@@ -150,8 +161,13 @@ export default function Dashboard() {
                     />
                     <span>{sug.name}</span>
                   </div>
+
+                  {/* Right side: Send Request Button */}
                   <button
-                    onClick={() => sendConnectionRequest(sug._id)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // ✅ stop parent navigation
+                      sendConnectionRequest(sug._id);
+                    }}
                     className="p-1 rounded-full hover:bg-purple-100"
                   >
                     <UserPlus className="w-5 h-5 text-purple-600" />
@@ -174,11 +190,11 @@ export default function Dashboard() {
               >
                 <div className="flex items-center space-x-3 mb-3">
                   <img
-                    src={post.user?.profilePic || "https://picsum.photos/35"}
+                    src={post.userId?.profilePic || "https://picsum.photos/35"}
                     alt="user"
                     className="w-9 h-9 rounded-full object-cover"
                   />
-                  <span className="font-semibold text-gray-700">{post.user?.name}</span>
+                  <span className="font-semibold text-gray-700">{post.userId?.name}</span>
                 </div>
 
                 <div className="flex-1">
@@ -197,7 +213,10 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex items-center space-x-6 mt-4 text-gray-600">
-                  <button onClick={() => toggleLike(post._id)} className="flex items-center space-x-2">
+                  <button
+                    onClick={() => toggleLike(post._id)}
+                    className="flex items-center space-x-2"
+                  >
                     <Heart
                       className={`w-5 h-5 ${post.likedByMe ? "fill-red-500 text-red-500" : ""}`}
                     />
@@ -215,12 +234,29 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* ---------- CREATE POST BUTTON ---------- */}
       <button
-        onClick={() => navigate("/create-post")}
+        onClick={() => setShowCreatePost(true)}
         className="fixed bottom-6 right-6 bg-purple-600 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center hover:bg-purple-700 transition"
       >
         <Plus className="w-6 h-6" />
       </button>
+
+      {/* ---------- CREATE POST MODAL ---------- */}
+      {showCreatePost && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-96 relative">
+            <button
+              onClick={() => setShowCreatePost(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </button>
+            <CreatePost onClose={() => setShowCreatePost(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import API from "../api/axios";
-import { useParams, useNavigate } from "react-router-dom";  // ✅ useNavigate import
+import { useParams, useNavigate } from "react-router-dom";
+import JobPostForm from "./create_job_post_form";
 
 export default function ViewProfile() {
   const { id } = useParams();
-  const navigate = useNavigate();   // ✅ navigate hook
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showJobForm, setShowJobForm] = useState(false); // ✅ new state
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -30,10 +32,9 @@ export default function ViewProfile() {
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex justify-center">
+    <div className="min-h-screen bg-gray-100 p-6 flex justify-center relative">
       <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl p-6">
-        
-        {/* 🔙 Back Button */}
+        {/* Back Button */}
         <button
           onClick={() => navigate("/dashboard")}
           className="mb-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
@@ -123,6 +124,23 @@ export default function ViewProfile() {
           <p>{user.connections?.length || 0} connections</p>
         </div>
       </div>
+
+      {/* ---------- JOB POST BUTTON ---------- */}
+      <button
+        onClick={() => setShowJobForm(true)}
+        className="fixed bottom-6 right-6 bg-purple-600 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center hover:bg-purple-700 transition z-50"
+      >
+        Post
+      </button>
+
+      {/* ---------- JOB POST MODAL ---------- */}
+      {showJobForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          
+            <JobPostForm />
+          
+        </div>
+      )}
     </div>
   );
 }
