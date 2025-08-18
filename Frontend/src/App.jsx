@@ -8,6 +8,9 @@ import Dashboard from "./pages/Dashboard";
 import UserPage from "./pages/UserPage";
 import MessageBox from "./pages/MessageBox";
 import NotificationPanel from "./pages/NotificationPanel"; 
+import AdminPanel from "./pages/admin_panel";
+import MessageRequests from "./pages/MessageRequests";
+
 
 function App() {
   return (
@@ -19,10 +22,12 @@ function App() {
         <Route path="/createprofile" element={<CreateProfile/>}/>
         <Route path="/profile/:id" element={<ViewProfile />} />
         <Route path="/dashboard" element={<Dashboard />} />
-         <Route path="/userpage/:id" element={<UserPage />} />
+        <Route path="/userpage/:id" element={<UserPage />} />
         <Route path="/chat" element={<MessageBox />} />
         <Route path="/notifications" element={<NotificationPanel />} />
-        
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/requests" element={<MessageRequests />} />
+
 
 
       </Routes>
