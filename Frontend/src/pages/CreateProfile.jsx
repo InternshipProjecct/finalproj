@@ -12,7 +12,7 @@ export default function CreateProfile() {
     skills: ""
   });
 
-  const userId = localStorage.getItem("userId"); // ✅ login/signup ke baad save kiya tha
+  const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -52,9 +52,6 @@ export default function CreateProfile() {
       });
 
       alert("Profile Updated ✅");
-      console.log("Updated User:", res.data);
-
-      // ✅ navigate to profile page with userId
       navigate(`/profile/${userId}`);
     } catch (err) {
       console.error(err);
@@ -63,29 +60,29 @@ export default function CreateProfile() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-olive-50 via-white to-olive-100">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl space-y-6"
+        className="bg-white/80 backdrop-blur-lg p-8 rounded-2xl shadow-xl w-full max-w-2xl space-y-6 border border-olive-200"
       >
-        <h2 className="text-3xl font-bold text-purple-600 text-center">
+        <h2 className="text-3xl font-bold text-center text-olive-800">
           Create Your Profile
         </h2>
 
         {/* Bio */}
         <div>
-          <label className="block mb-1 font-medium">Bio</label>
+          <label className="block mb-1 font-medium text-olive-700">Bio</label>
           <textarea
             name="bio"
             value={formData.bio}
             onChange={handleChange}
-            className="w-full border rounded-lg px-3 py-2"
+            className="w-full border border-olive-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-olive-500"
           />
         </div>
 
         {/* Profile Picture */}
         <div>
-          <label className="block mb-1 font-medium">Profile Picture</label>
+          <label className="block mb-1 font-medium text-olive-700">Profile Picture</label>
           <input
             type="file"
             name="profilePic"
@@ -97,7 +94,7 @@ export default function CreateProfile() {
 
         {/* Banner Picture */}
         <div>
-          <label className="block mb-1 font-medium">Banner Picture</label>
+          <label className="block mb-1 font-medium text-olive-700">Banner Picture</label>
           <input
             type="file"
             name="bannerPic"
@@ -109,7 +106,7 @@ export default function CreateProfile() {
 
         {/* Experience */}
         <div>
-          <label className="block mb-2 font-medium">Experience</label>
+          <label className="block mb-2 font-medium text-olive-700">Experience</label>
           {formData.experience.map((exp, i) => (
             <div key={i} className="grid grid-cols-2 gap-2 mb-2">
               <input
@@ -119,7 +116,7 @@ export default function CreateProfile() {
                 onChange={(e) =>
                   handleArrayChange(i, "company", e.target.value, "experience")
                 }
-                className="border rounded px-2 py-1"
+                className="border border-olive-200 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-olive-500"
               />
               <input
                 type="text"
@@ -128,7 +125,7 @@ export default function CreateProfile() {
                 onChange={(e) =>
                   handleArrayChange(i, "role", e.target.value, "experience")
                 }
-                className="border rounded px-2 py-1"
+                className="border border-olive-200 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-olive-500"
               />
               <input
                 type="date"
@@ -136,7 +133,7 @@ export default function CreateProfile() {
                 onChange={(e) =>
                   handleArrayChange(i, "from", e.target.value, "experience")
                 }
-                className="border rounded px-2 py-1"
+                className="border border-olive-200 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-olive-500"
               />
               <input
                 type="date"
@@ -144,7 +141,7 @@ export default function CreateProfile() {
                 onChange={(e) =>
                   handleArrayChange(i, "to", e.target.value, "experience")
                 }
-                className="border rounded px-2 py-1"
+                className="border border-olive-200 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-olive-500"
               />
             </div>
           ))}
@@ -152,7 +149,7 @@ export default function CreateProfile() {
 
         {/* Education */}
         <div>
-          <label className="block mb-2 font-medium">Education</label>
+          <label className="block mb-2 font-medium text-olive-700">Education</label>
           {formData.education.map((edu, i) => (
             <div key={i} className="grid grid-cols-2 gap-2 mb-2">
               <input
@@ -162,7 +159,7 @@ export default function CreateProfile() {
                 onChange={(e) =>
                   handleArrayChange(i, "school", e.target.value, "education")
                 }
-                className="border rounded px-2 py-1"
+                className="border border-olive-200 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-olive-500"
               />
               <input
                 type="text"
@@ -171,7 +168,7 @@ export default function CreateProfile() {
                 onChange={(e) =>
                   handleArrayChange(i, "degree", e.target.value, "education")
                 }
-                className="border rounded px-2 py-1"
+                className="border border-olive-200 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-olive-500"
               />
               <input
                 type="date"
@@ -179,7 +176,7 @@ export default function CreateProfile() {
                 onChange={(e) =>
                   handleArrayChange(i, "from", e.target.value, "education")
                 }
-                className="border rounded px-2 py-1"
+                className="border border-olive-200 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-olive-500"
               />
               <input
                 type="date"
@@ -187,7 +184,7 @@ export default function CreateProfile() {
                 onChange={(e) =>
                   handleArrayChange(i, "to", e.target.value, "education")
                 }
-                className="border rounded px-2 py-1"
+                className="border border-olive-200 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-olive-500"
               />
             </div>
           ))}
@@ -195,21 +192,21 @@ export default function CreateProfile() {
 
         {/* Skills */}
         <div>
-          <label className="block mb-1 font-medium">Skills</label>
+          <label className="block mb-1 font-medium text-olive-700">Skills</label>
           <input
             type="text"
             name="skills"
             value={formData.skills}
             onChange={handleChange}
             placeholder="e.g. React, Node.js, MongoDB"
-            className="w-full border rounded-lg px-3 py-2"
+            className="w-full border border-olive-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-olive-500"
           />
         </div>
 
         {/* Submit */}
         <button
           type="submit"
-          className="w-full bg-purple-600 text-white py-2 rounded-lg font-semibold hover:bg-purple-700 transition"
+          className="w-full bg-olive-600 text-white py-2 rounded-lg font-semibold hover:bg-olive-700 transition shadow-md"
         >
           Save Profile
         </button>

@@ -26,7 +26,6 @@ export default function CreatePost({ onClose }) {
         },
       });
 
-      
       setContent("");
       setImage(null);
       if (onClose) onClose();
@@ -37,8 +36,8 @@ export default function CreatePost({ onClose }) {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-8 bg-white p-6 rounded-xl shadow-md">
-      <h2 className="text-2xl font-bold text-gray-700 mb-4">Create Post</h2>
+    <div className="max-w-xl mx-auto mt-8 bg-olive-50 p-6 rounded-xl shadow-md">
+      <h2 className="text-2xl font-bold text-olive-900 mb-4">Create Post</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Content */}
@@ -46,7 +45,7 @@ export default function CreatePost({ onClose }) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="What's on your mind?"
-          className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-olive-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-olive-400 focus:border-olive-400"
           rows={3}
         />
 
@@ -55,13 +54,13 @@ export default function CreatePost({ onClose }) {
           type="file"
           accept="image/*"
           onChange={(e) => setImage(e.target.files[0])}
-          className="w-full"
+          className="w-full border border-olive-300 rounded-lg p-2 focus:ring-2 focus:ring-olive-400 focus:border-olive-400"
         />
 
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          className="w-full bg-olive-600 text-white py-2 rounded-lg font-semibold hover:bg-olive-700 transition"
         >
           Post
         </button>

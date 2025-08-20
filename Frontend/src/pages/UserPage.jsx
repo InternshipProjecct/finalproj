@@ -1,34 +1,34 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../api/axios";
-
+import { Home } from "lucide-react"; 
 export default function UserPage() {
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
+  const [connected, setConnected] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
+        const loggedInUserId = localStorage.getItem("userId");
 
-        // 🔹 Fetch user info
         const userRes = await API.get(`/users/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         setProfile(userRes.data);
 
-        // ✅ check if already requested
-        const loggedInUserId = localStorage.getItem("userId");
-        if (userRes.data.connectionRequests?.includes(loggedInUserId)) {
+        if (userRes.data.connections?.includes(loggedInUserId)) {
+          setConnected(true);
+        } else if (userRes.data.connectionRequests?.includes(loggedInUserId)) {
           setRequestSent(true);
         }
 
-        // 🔹 Fetch user posts
         const postRes = await API.get(`/posts/user/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -41,7 +41,6 @@ export default function UserPage() {
     fetchData();
   }, [id]);
 
-  // 🔹 Handle Send Request
   const handleSendRequest = async () => {
     try {
       setLoading(true);
@@ -63,10 +62,13 @@ export default function UserPage() {
     }
   };
 
-  if (!profile) return <p className="text-center mt-10">Loading...</p>;
+  if (!profile)
+    return (
+      <p className="text-center mt-10 text-olive-800 font-medium">Loading...</p>
+    );
 
   return (
-    <div className="max-w-5xl mx-auto mt-6 space-y-6">
+    <div className="max-w-7xl mx-auto mt-6 space-y-6">
       {/* Banner + ProfilePic */}
       <div className="relative">
         <img
@@ -74,6 +76,13 @@ export default function UserPage() {
           alt="banner"
           className="w-full h-48 object-cover rounded-lg"
         />
+        <button
+    onClick={() => navigate("/dashboard")}
+    className="absolute top-3 left-3 p-2 bg-white/80 text-olive-800 rounded-full shadow hover:bg-white transition"
+  >
+    <Home className="w-5 h-5" />
+  </button>
+
         <img
           src={profile.profilePic || "https://picsum.photos/100"}
           alt="profile"
@@ -82,11 +91,11 @@ export default function UserPage() {
       </div>
 
       {/* Info */}
-      <div className="mt-14 px-6">
-        <h2 className="text-2xl font-bold text-gray-800">{profile.name}</h2>
-        <p className="text-gray-600">{profile.bio || "No bio available"}</p>
+      <div className="mt-64 px-2">
+        <h2 className="text-2xl font-bold text-olive-900 mt-10">{profile.name}</h2>
+        <p className="text-olive-700">{profile.bio || "No bio available"}</p>
         {profile.skills?.length > 0 && (
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-olive-600">
             Skills: {profile.skills.join(", ")}
           </p>
         )}
@@ -94,43 +103,52 @@ export default function UserPage() {
         <div className="flex space-x-4 mt-4">
           <button
             onClick={handleSendRequest}
-            disabled={loading || requestSent}
-            className={`px-4 py-2 rounded-lg text-white ${
-              requestSent
-                ? "bg-green-500 cursor-not-allowed"
-                : "bg-purple-600 hover:bg-purple-700"
+            disabled={loading || requestSent || connected}
+            className={`px-4 py-2 rounded-lg text-white font-medium ${
+              connected
+                ? "bg-olive-700 cursor-not-allowed"
+                : requestSent
+                ? "bg-olive-500 cursor-not-allowed"
+                : "bg-olive-600 hover:bg-olive-700"
             }`}
           >
-            {requestSent ? "Request Sent" : loading ? "Sending..." : "Send Request"}
+            {connected
+              ? "Connected "
+              : requestSent
+              ? "Request Sent"
+              : loading
+              ? "Sending..."
+              : "Send Request"}
           </button>
 
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-          >
-            Back to Dashboard
-          </button>
+         
         </div>
       </div>
 
       {/* Posts */}
-      <div className="bg-white shadow rounded-lg p-4">
-        <h3 className="font-semibold mb-4">Posts</h3>
+      <div className="bg-olive-50 shadow rounded-lg p-4">
+        <h3 className="font-semibold text-olive-800 mb-4">Posts</h3>
         {posts.length > 0 ? (
           posts.map((post) => (
-            <div key={post._id} className="border-b py-3">
-              <p>{post.content}</p>
+            <div
+              key={post._id}
+              className="border-b border-olive-200 py-3 last:border-b-0"
+            >
+              <p className="text-olive-700">{post.content}</p>
               {post.image && (
                 <img
                   src={post.image}
                   alt="post"
-                  className="mt-2 rounded-lg max-h-60 object-cover"
+                  className="mt-2 rounded-lg max-h-60 object-cover w-full"
                 />
               )}
+              <p className="text-sm text-olive-500 mt-1">
+                {new Date(post.createdAt).toLocaleString()}
+              </p>
             </div>
           ))
         ) : (
-          <p className="text-gray-500">No posts yet</p>
+          <p className="text-olive-500">No posts yet</p>
         )}
       </div>
     </div>
