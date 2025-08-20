@@ -7,8 +7,15 @@ exports.sendMessage = async (req, res) => {
             receiverId: req.body.receiverId,
             content: req.body.content
         });
-        await message.save();
-        res.status(201).json(message);
+        const savedMsg = await message.save();
+
+        // Broadcast via socket (we attach io in app.js)
+        if (req.io) {
+            req.io.to(req.body.receiverId).emit("receive_message", savedMsg);
+            req.io.to(req.user.id).emit("receive_message", savedMsg); // send to sender too
+        }
+
+        res.status(201).json(savedMsg);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

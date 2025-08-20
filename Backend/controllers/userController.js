@@ -85,3 +85,24 @@ exports.acceptConnectionRequest = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password"); // password exclude
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+exports.getAllConnections = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+      .populate("connectionRequests", "name profilePic"); // populate name + profilePic
+
+    res.json(user.connectionRequests); // array bhej do
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};

@@ -5,7 +5,9 @@ const {
     createPost,
     getFeed,
     likePost,
-    commentOnPost
+    commentOnPost,
+    getUserPosts,
+    deletePost
 } = require("../controllers/postController");
 
 const router = express.Router();
@@ -14,5 +16,7 @@ router.post("/", authMiddleware, upload.single("image"), createPost); // ✅ fil
 router.get("/feed", authMiddleware, getFeed);
 router.put("/:id/like", authMiddleware, likePost);
 router.post("/:id/comment", authMiddleware, commentOnPost);
+router.get("/user/:id", authMiddleware, getUserPosts);
+router.delete("/:id", authMiddleware, deletePost);
 
 module.exports = router;
